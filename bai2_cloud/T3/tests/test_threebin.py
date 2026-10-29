@@ -74,14 +74,20 @@ def test_quota_formula_hand_example():
     assert largest_remainder_quotas([7, 4, 9], {7: 1, 4: 1, 9: 1}, 10 + 30, 10, 1.0) == {4: 14, 7: 13, 9: 13}
 
 
-def test_quotas_sum_to_kF_every_update():
+def test_P1_quotas_by_2_4_sum_to_kF_t_every_update():
     rng = np.random.default_rng(2)
     p = ThreeBin(k=600, q_min=15, kappa_x=0.05)
     for d, _ in drive(p, 20, rng, lambda d: [0.6, 0.2, 0.1, 0.05 if d < 8 else 0.0, 0.05],
                       shift_of=lambda d: 2.0 if d in (6, 13) else 0.0):
         log = p.log[-1]
         assert log["quota_sum"] == log["k_F_eff"]
-        assert log["k_F_eff"] == (p.k_F - p.moved if log["trigger_active"] else p.k_F)
+        assert min(log["quotas"].values()) >= p.q_min
+        assert log["quotas"] == largest_remainder_quotas(list(log["quotas"]), p._priors(), log["k_F_eff"], p.q_min,
+                                                         p.gamma)
+        G = log["G"]
+        k_F_def = max(p.k_F_base, G * p.q_min)
+        assert log["k_F_eff"] == (k_F_def - min(int(0.5 * k_F_def), k_F_def - G * p.q_min)
+                                  if log["trigger_active"] else k_F_def)
     assert any(l["trigger_active"] for l in p.log) and not all(l["trigger_active"] for l in p.log)
 
 
@@ -115,26 +121,21 @@ def test_group_below_qmin_keeps_every_row_it_had():
 
 
 def test_recent_bin_shrinks_by_at_most_G_qmin():
-    # Prop. 1(c) cost, as read in DESIGN_CHOICES DC-13: the recency lost to the representative bin, (k - |H|) - |R|
-    # = |F|, is at most k_F_eff, and with all movable capacity moved (delta k_F = k_F - G q_min) at most G q_min.
-    G, q_min, k = 4, 20, 1000
-    k_F = 400
-    delta = 1 - G * q_min / k_F                                   # 0.8 -> moved = 320 = k_F - G q_min
-    p = ThreeBin(k=k, w=(0.5, 0.4, 0.1), q_min=q_min, delta=delta, kappa_x=0.5)
-    assert p.k_F == k_F and p.moved == k_F - G * q_min and p.G_max == G
+    # D1: k_R(t) = k - k_H - max(w_F k, G q_min). Relative to the default k_R = k - k_H - w_F k it shrinks by
+    # max(0, G q_min - w_F k) <= G q_min; and it never exceeds k - k_H - G q_min (prop1.md, Theorem 1 cost).
+    k, q_min = 500, 30
+    p = ThreeBin(k=k, w=(0.7, 0.2, 0.1), q_min=q_min, delta=0.5, kappa_x=0.3)   # w_F k = 100 < 9 * 30
+    k_R_default = k - p.k_H - p.k_F_base
     rng = np.random.default_rng(5)
-    seen = 0
-    for d, ctx in drive(p, 30, rng, lambda d: [0.5, 0.15, 0.15, 0.1, 0.1], n_per_day=500,
-                        shift_of=lambda d: 3.0 if d in (10, 20) else 0.0):
+    for d, _ in drive(p, 30, rng, lambda d: [0.4] + [0.6 / 9 if f <= d + 1 else 0.0 for f in range(1, 10)],
+                      n_per_day=300, shift_of=lambda d: 1.5 * ((d // 4) % 2)):
         log = p.log[-1]
-        assert len(ctx) - len(p.H) - len(p.R) == log["n_F"] <= log["k_F_eff"]
-        if len(ctx) < k:
-            continue                                              # context not yet full: nothing was evicted
-        loss = (k - len(p.H)) - len(p.R)
-        if log["trigger_active"]:
-            assert loss <= len(p.groups) * q_min
-            seen += 1
-    assert seen >= 3
+        G = log["G"]
+        assert len(p.R) <= log["k_R_eff"] <= k - p.k_H - G * q_min
+        if not log["trigger_active"]:
+            assert k_R_default - log["k_R_eff"] <= G * q_min
+            assert log["k_R_eff"] == k - p.k_H - max(p.k_F_base, G * q_min)
+    assert p.log[-1]["G"] == 9 and p.k_F >= 9 * q_min
 
 
 # ---------------------------------------------------------------- hard bin
@@ -150,7 +151,12 @@ def test_hard_bin_capped_and_only_rows_with_stored_margin():
 
 def test_hard_bin_above_cap_is_rejected():
     with pytest.raises(ValueError):
-        ThreeBin(k=100, w=(0.5, 0.35, 0.15))
+        ThreeBin(k=100, q_min=5, w=(0.5, 0.35, 0.15))
+
+
+def test_q_min_is_a_required_parameter():
+    with pytest.raises(TypeError):
+        ThreeBin(k=100)
 
 
 def test_hard_bin_via_replay_uses_query_time_margin():
@@ -175,9 +181,10 @@ def test_x_shift_trigger_moves_capacity_and_reverts_after_D_days():
     assert fired[shift_day] and sum(fired) == 1
     assert act == [shift_day <= d < shift_day + 3 for d in range(22)]
     for d in (shift_day, shift_day + 1, shift_day + 2):
-        assert p.log[d]["k_F_eff"] == p.k_F - int(np.floor(0.5 * p.k_F))
+        assert p.log[d]["k_F_eff"] == p.k_F_base - int(np.floor(0.5 * p.k_F_base))
+        assert p.log[d]["k_R_eff"] == p.k - p.k_H - p.log[d]["k_F_eff"]
         assert p.log[d]["n_F"] <= p.log[d]["k_F_eff"]
-    assert p.log[shift_day + 3]["k_F_eff"] == p.k_F
+    assert p.log[shift_day + 3]["k_F_eff"] == p.k_F_base
     assert p.log[shift_day]["n_R"] > p.log[shift_day - 1]["n_R"]          # capacity went to R
     assert p.log[shift_day + 5]["n_F"] > p.log[shift_day + 1]["n_F"]       # and came back to F
 
@@ -215,10 +222,9 @@ def test_bbse_trigger_fires_on_prior_shift_and_not_without():
 
 
 # ---------------------------------------------------------------- constraints on G (user requirements 1 and 2)
-def test_kF_ge_G_qmin_and_delta_bound_as_G_grows():
-    # k_F = 200, q_min = 25, delta = 0.5 -> moved = 100, G_max = (200 - 100) // 25 = 4. Families arrive one per day.
-    p = ThreeBin(k=500, w=(0.5, 0.4, 0.1), q_min=25, delta=0.5, kappa_x=0.3)
-    assert (p.k_F, p.moved, p.G_max) == (200, 100, 4)
+def test_D1_kF_grows_with_G_and_kR_takes_the_difference():
+    # w_F k = 100, q_min = 25: from G = 5 on, k_F = G q_min and k_R = k - k_H - G q_min. Families arrive one per day.
+    p = ThreeBin(k=500, w=(0.7, 0.2, 0.1), q_min=25, delta=0.5, kappa_x=0.0)
     rng = np.random.default_rng(9)
     n_fam = 9
 
@@ -228,19 +234,127 @@ def test_kF_ge_G_qmin_and_delta_bound_as_G_grows():
         q[1:min(d + 2, n_fam + 1)] = 1.0
         q[1:] *= 0.5 / q[1:].sum()
         return q
-    for d, ctx in drive(p, 30, rng, probs, n_per_day=300, shift_of=lambda d: 1.5 * ((d // 4) % 2)):
-        G = len(p.groups)
-        assert p.k_F >= G * p.q_min
-        assert p.moved <= p.k_F - G * p.q_min
-        assert p.log[-1]["k_F_eff"] >= G * p.q_min
-        assert set(p.F) <= p.groups                                  # unprotected groups never hold F rows
-    assert p.groups == {1, 2, 3, 4} and p.unprotected == {5, 6, 7, 8, 9}
-    assert any(l["trigger_active"] for l in p.log)
+    for d, ctx in drive(p, 15, rng, probs, n_per_day=300):
+        G = p.log[-1]["G"]
+        assert p.k_F == max(100, G * 25) >= G * p.q_min
+        assert p.k_R == 500 - p.k_H - p.k_F
+        assert p.k_R + p.k_F + p.k_H == p.k
+        for g in p.groups:
+            if g in p.reached_qmin:
+                assert len(p.F.get(g, [])) + sum(p._grp.get(s) == g for s in list(p.R) + list(p.H)) >= p.q_min
+    assert p.groups == set(range(1, 10)) and p.k_F == 225 and not p.unprotected
 
 
-def test_group_admission_rule_raises_when_no_group_fits():
+def test_delta_cap_moved_le_kF_minus_G_qmin():
+    # k_F = 200, q_min = 30, delta = 0.9: floor(0.9 * 200) = 180 > 200 - 4 * 30 = 80, so only 80 move.
+    p = ThreeBin(k=500, w=(0.5, 0.4, 0.1), q_min=30, delta=0.9, kappa_x=0.5)
+    rng = np.random.default_rng(11)
+    seen = 0
+    for d, _ in drive(p, 20, rng, lambda d: [0.4, 0.15, 0.15, 0.15, 0.15], n_per_day=300,
+                      shift_of=lambda d: 3.0 if d in (8, 15) else 0.0):
+        log = p.log[-1]
+        G = log["G"]
+        assert log["moved"] <= max(p.k_F_base, G * p.q_min) - G * p.q_min
+        assert log["k_F_eff"] >= G * p.q_min
+        if log["trigger_active"] and G == 4:
+            assert log["moved"] == 80 and log["k_F_eff"] == 120 == G * p.q_min
+            N = p.counts_by_group()
+            assert all(N.get(g, 0) >= p.q_min for g in p.reached_qmin)
+            seen += 1
+    assert seen >= 3
+
+
+def test_admission_limit_when_floors_cannot_fit():
+    # DC-12 fallback: G q_min <= k - k_H; with k = 100, k_H = 10, q_min = 30 at most 3 groups get a quota.
+    p = ThreeBin(k=100, q_min=30)
+    rng = np.random.default_rng(12)
+    for d, _ in drive(p, 6, rng, lambda d: [0.2, 0.2, 0.2, 0.2, 0.2], n_per_day=200):
+        assert p.k_F >= len(p.groups) * p.q_min and p.k_R >= 0
+    assert len(p.groups) == 3 and len(p.unprotected) == 1
+    assert not set(p.F) & p.unprotected
+
+
+def test_admission_raises_when_no_group_fits():
     with pytest.raises(ValueError):
-        ThreeBin(k=100, w=(0.6, 0.3, 0.1), q_min=20, delta=0.5)      # k_F = 30, moved = 15 -> 15 < q_min
+        ThreeBin(k=100, w=(0.6, 0.3, 0.1), q_min=95)                # k - k_H = 90 < q_min
+
+
+# ---------------------------------------------------------------- D4: axioms P0-P3 of T2 prop1.md, literally
+def _axiom_run(seed=13):
+    """Policy and per-update snapshots on a stream with group growth, an absence, quota changes and shifts."""
+    p = ThreeBin(k=600, q_min=15, delta=0.6, kappa_x=0.3, margin_max=0.3)
+    rng = np.random.default_rng(seed)
+    snaps = []
+
+    def probs(d):
+        q = np.array([0.5, 0.2, 0.1, 0.1, 0.05, 0.05])
+        if 5 <= d < 15:
+            q[3] = 0.0                                               # family 3 absent 10 days
+        q[5] = q[5] if d >= 8 else 0.0                               # family 5 appears on day 8
+        return q
+    before_F = {}
+    for d, ctx in drive(p, 30, rng, probs, n_per_day=250, shift_of=lambda d: 1.5 * ((d // 6) % 2)):
+        snaps.append({"F_before": before_F, "F_after": {g: list(v) for g, v in p.F.items()},
+                      "R": list(p.R), "H": list(p.H), "log": p.log[-1], "ctx": len(ctx),
+                      "new": list(range(p._seq - 250, p._seq))})
+        before_F = {g: list(v) for g, v in p.F.items()}
+    assert any(sn["log"]["trigger_active"] for sn in snaps)
+    return p, snaps
+
+
+def test_P0_capacity():
+    p, snaps = _axiom_run()
+    for sn in snaps:
+        log = sn["log"]
+        G = log["G"]
+        assert log["k_R_eff"] + log["k_F_eff"] + p.k_H == p.k
+        assert p.k_H <= 0.1 * p.k
+        assert len(sn["R"]) <= log["k_R_eff"]
+        assert sum(len(v) for v in sn["F_after"].values()) <= log["k_F_eff"]
+        assert len(sn["H"]) <= p.k_H
+        assert log["k_F_eff"] >= G * p.q_min
+        assert sn["ctx"] <= p.k
+
+
+def test_P1_quotas_sum_to_kF_and_floor():
+    p, snaps = _axiom_run()
+    for sn in snaps:
+        q = sn["log"]["quotas"]
+        assert sum(q.values()) == sn["log"]["k_F_eff"] and min(q.values()) >= p.q_min
+
+
+def test_P2_F_rows_leave_only_above_quota_or_by_swap():
+    p, snaps = _axiom_run()
+    swaps = 0
+    for sn in snaps:
+        q = sn["log"]["quotas"]
+        for g in set(sn["F_before"]) | set(sn["F_after"]):
+            b, a = set(sn["F_before"].get(g, [])), set(sn["F_after"].get(g, []))
+            removed, added = b - a, a - b
+            assert len(removed) <= len(added) + max(0, len(b) - q[g])
+            assert len(a) >= min(len(b), q[g])
+            swaps += min(len(removed), len(added))
+    assert swaps > 0                                                 # the k-center swap path was exercised
+
+
+def test_P3_rows_enter_R_or_H_and_are_offered_to_F():
+    p, snaps = _axiom_run()
+    for sn in snaps:
+        offered = {s for s, _ in sn["log"]["offered"]}
+        assert set(sn["new"]) <= set(sn["R"]) | set(sn["H"]) | offered
+        assert not (set(sn["R"]) & set(sn["H"]))
+        q = sn["log"]["quotas"]
+        by_g = {}
+        for s, g in sn["log"]["offered"]:
+            assert s not in sn["R"] and s not in sn["H"]
+            if g is not None:
+                by_g.setdefault(g, []).append(s)
+        for g, ss in by_g.items():
+            a = set(sn["F_after"].get(g, []))
+            if len(sn["F_before"].get(g, [])) + len(ss) <= q[g]:
+                assert set(ss) <= a                                  # |F_c| < q_c: every offered row accepted
+            else:
+                assert len(a) == q[g]                                # otherwise F_c is full at its quota
 
 
 # ---------------------------------------------------------------- determinism and isolation
@@ -295,7 +409,7 @@ def test_k_center_spreads_points():
 def test_smoke_family_absent_5_days_threebin_keeps_fifo_loses():
     s = SynthStream(11, absence_probs(), per_day=4000, seed=0)
     out = {}
-    for cls, kw in ((ThreeBin, dict(q_min=20)), (FIFO, {})):
+    for cls, kw in ((ThreeBin, dict(q_min=20)), (FIFO, {})):  # q_min = 20: illustrative value
         p = recording(cls)(k=1000, **kw)
         run_replay(s, p, LightGBMModel(params=FAST), b=600, tau=0, a_fp=50, n_days=11, n_eval=1000)
         out[cls.name] = [t["fam"].get(5, 0) for t in p.trace]

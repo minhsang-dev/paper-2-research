@@ -8,14 +8,24 @@ on development data (outline: "Mọi tham số được chọn bằng tìm kiế
 
 Each item: the decision, the default implemented, and the alternatives. Mark ✔ / ✘ / change.
 
+## Decided by the NCS (implemented)
+- **D1.** k_F(t) = max(w_F·k, G·q_min); k_R(t) = k − k_H − k_F(t) takes the difference. So k_F ≥ G·q_min at all times
+  as G grows, and no group is refused while G·q_min ≤ k − k_H.
+- **D4.** The axioms P0–P3 of T2 (`bai2_cloud/T2/prop1.md`, §0) are implemented literally, one test each
+  (`test_P0_capacity`, `test_P1_…`, `test_P2_…`, `test_P3_…`), plus the δ cap: during a shift the capacity moved is
+  min(⌊δ·k_F⌋, k_F − G·q_min) (`test_delta_cap_moved_le_kF_minus_G_qmin`). Theorem 1 of T2 (N_c ≥ min(q_min, M_c))
+  then applies to the family mode.
+- **q_min** is a required constructor argument with no default; it is set later (T2 / grid). Tests and the demo pass
+  illustrative values.
+
 ## A. Parameters (placeholders, to be set by grid search / T2)
 
 | Id | Parameter | Default | Note |
 |---|---|---|---|
 | DC-15a | w_R : w_F : w_H | 0.5 : 0.4 : 0.1 | w_H > 0.1 is rejected |
-| DC-15b | q_min | 20 | T2 (Mệnh đề 1) chooses the optimum |
+| DC-15b | q_min | *none (required)* | set later (T2 rule / grid); demo uses 20 |
 | DC-15c | γ | 0.5 | γ ∈ (0, 1] |
-| DC-15d | δ | 0.5 | must be in [0, 1); see DC-12 for the bound δ·k_F ≤ k_F − G·q_min |
+| DC-15d | δ | 0.5 | must be in [0, 1); moved capacity capped at k_F − G·q_min (D4) |
 | DC-15e | κ_π (BBSE L1) | 0.1 | |
 | DC-15f | κ_X (p-value) | 0.01 | on the Bonferroni-corrected p of DC-03 |
 | DC-15g | margin threshold for H | 0.2 | see DC-09 |
@@ -25,8 +35,8 @@ Each item: the decision, the default implemented, and the alternatives. Mark ✔
 
 ## B. Open points of the specification
 
-**DC-01 Bin rounding.** k_H = ⌊w_H·k⌋, k_F = round(w_F·k), k_R = k − k_F − k_H. With k = 2,000 and the defaults:
-1,000 / 800 / 200.
+**DC-01 Bin rounding.** k_H = ⌊w_H·k⌋, w_F·k is taken as round(w_F·k) in D1, k_R = k − k_F − k_H. With k = 2,000 and the
+defaults: 1,000 / 800 / 200 while G·q_min ≤ 800.
 
 **DC-02 Source of π̂_c in (2-4).** The model is binary, so BBSE cannot estimate family shares. Default: π̂_c = share of
 group c among the grouped labelled rows that arrived in the last 7 updates (labels are a uniform sample of the day, so
@@ -75,26 +85,23 @@ labels) are stored. The harness has no source-flag field yet, so "từ nguồn k
 phase; RQ4 must add a flag and H must then reject flagged rows. *Alternatives:* each day admit the m lowest-margin rows;
 a quantile threshold.
 
-**DC-10 Row flow.** Bins are disjoint. A new row goes to H if hard (DC-09), otherwise R. A row leaving R (FIFO) or H (age)
-becomes a candidate of its group's F pool; F keeps q_c rows per group by k-center. Benign rows (and rows of unprotected
-groups, DC-12) leaving R/H are dropped. *Alternative:* F selects from all rows ever seen of the group (rows may then sit
-in R and F at once, deduplicated by rid).
+**DC-10 Row flow (P3).** Bins are disjoint. A new row goes to H if hard (DC-09), otherwise R. A row leaving R (FIFO) or
+H (age) is offered to its group's F_c: accepted while |F_c| < q_c; when F_c is at its quota the offered row competes in
+the group's k-center selection, so it can replace an F row of the same group (a P2(ii) swap) but never raises |F_c|
+above q_c. Benign rows (and rows of unprotected groups, DC-12) leaving R/H are dropped. *Open:* should an offered row be
+simply rejected when F_c is full (no swap)? P2 allows the swap; rejecting would freeze F_c on its oldest rows.
 
-**DC-11 Work-conserving budget.** Capacity unused by F or H is used by R, so the context reaches k as soon as there are
-k rows. *Alternative:* fixed bin sizes (context smaller than k while F/H are not full).
+**DC-11 Bin sizes are hard caps (P0).** |R| ≤ k_R(t), |F| ≤ k_F(t), |H| ≤ k_H; R does not borrow unused F or H
+capacity, so the context is below k until F and H fill (e.g. when there are few groups). This replaces the
+work-conserving default of the first version, because P0 requires |R| ≤ k_R(t).
 
-**DC-12 Group admission rule (NCS requirement 1 and 2).** G_max = ⌊(k_F − ⌊δ·k_F⌋) / q_min⌋. Groups are admitted in order
-of first arrival until G = G_max; this keeps k_F ≥ G·q_min **and** ⌊δ·k_F⌋ ≤ k_F − G·q_min at all times, so a trigger
-never pushes a group below q_min. A later group is *unprotected*: no quota, its rows live in R/H only and are dropped
-when they leave; it is listed in the log (`unprotected`). The constructor rejects settings with G_max < 1. With k = 2,000
-and defaults, G_max = (800 − 400) / 20 = 20 (NF-CICIDS2018-v3 has 14 attack families per `cache_meta/…/meta.json`).
-*Alternatives:* (a) grow k_F into k_R when a new group arrives; (b) reduce the moved capacity instead of refusing groups;
-(c) evict the group with the oldest last arrival to make room.
+**DC-12 Admission limit (fallback only).** With D1, a group is refused a quota only if the floors could not fit next to
+H: G·q_min > k − k_H, i.e. G > G_max = ⌊(k − k_H)/q_min⌋ (= 90 with k = 2,000, k_H = 200, q_min = 20). A refused group
+is *unprotected* (rows in R/H only, listed in the log); then k_R(t) = 0 already. The constructor rejects k − k_H < q_min.
 
-**DC-13 Reading of "the recent bin shrinks by at most G·q_min".** Default reading: the recency lost to the
-representative bin is (k − |H|) − |R| = |F| ≤ k_F_eff; it reaches its minimum G·q_min when all movable capacity is
-moved (δ·k_F = k_F − G·q_min). Tested in that configuration. Please confirm this is the intended statement of
-Mệnh đề 1(c).
+**DC-13 Reading of "the recent bin shrinks by at most G·q_min".** Under D1, k_R(t) = k − k_H − max(w_F·k, G·q_min):
+relative to the default k_R it shrinks by max(0, G·q_min − w_F·k) ≤ G·q_min, and it never exceeds k − k_H − G·q_min (the
+cost statement of T2's Theorem 1). Both are tested.
 
 **DC-14 Benign as a group.** Default: no (groups are attack families / attack clusters, as the outline says); benign
 lives in R and H. `benign_group=True` makes benign group 0 with its own quota.

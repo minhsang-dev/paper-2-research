@@ -18,7 +18,7 @@ SEEDS = (0, 1, 2)
 RARE, ABSENT, RETURN = 5, list(range(5, 10)), 10
 LGBM = dict(n_estimators=50, verbosity=-1)
 POLICIES = {"FIFO": (FIFO, {}), "DualFIFO": (DualFIFO, {}), "CBRS-family": (CBRSFamily, {}),
-            "ThreeBin": (ThreeBin, {})}
+            "ThreeBin": (ThreeBin, dict(q_min=20))}  # q_min illustrative (T2 base setting)
 
 
 def main():

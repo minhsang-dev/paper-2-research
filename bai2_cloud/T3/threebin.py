@@ -16,14 +16,21 @@ Bins (disjoint; every context row is in exactly one):
   F  representative:  per-group quotas q_c (formula 2-4, largest-remainder rounding), k-center selection per group;
   H  hard:            rows whose stored margin is <= margin_max, k_H <= 0.1 k, evicted by age; never a row without a
                       stored margin; never a pseudo-label (only rows handed to `update`, i.e. expert labels).
-Row flow (DC-10): a new row enters H if hard, otherwise R. A row leaving R (FIFO overflow) or H (age) becomes a candidate
-of its group's F pool; ungrouped rows (benign, unless benign_group=True) are dropped. The budget is work-conserving
-(DC-11): capacity not used by F or H is used by R, so |R| = k - |F| - |H| once the stream has filled the context.
+Capacities (NCS decision D1): k_F(t) = max(round(w_F k), G q_min) and k_R(t) = k - k_H - k_F(t), so k_F >= G q_min as
+G grows. During a shift, k_F(t) loses min(floor(delta k_F), k_F - G q_min) to k_R(t) (the delta cap).
+The bins follow the axioms P0-P3 of T2 (bai2_cloud/T2/prop1.md) literally (NCS decision D4):
+  P0  |R| <= k_R(t), |F| <= k_F(t), |H| <= k_H <= 0.1 k, k_F(t) >= G q_min, k_R(t) + k_F(t) + k_H = k;
+  P1  quotas q_c(t) by (2-4) with largest-remainder rounding, sum = k_F(t);
+  P2  a row of c leaves F only when |F_c| > q_c(t) or when a k-center swap replaces it with another row of c;
+  P3  every new row enters R or H; a row leaving R (FIFO) or H (age) is offered to F_c and accepted when |F_c| < q_c(t)
+      (otherwise it competes in the k-center selection of c, i.e. a P2 swap). Ungrouped rows (benign unless
+      benign_group=True, unprotected groups) leaving R/H are dropped. Bins are disjoint.
+Bin sizes are hard caps (no lending), so the context is below k until F fills (DC-11).
 
 Per update (outline steps 1-5): (1) receive the labelled rows; (2) shift signals: BBSE prior shift (L1 between pi_hat_t
 and pi_hat_{t-1}) and a two-sample test on P(X) between the unlabelled samples of days t and t-1; (3) if either fires,
-move floor(delta * k_F) capacity from F to R for D updates (a new firing restarts the D-update hold, DC-07), never below
-G * q_min; (4) quotas by (2-4); (5) eviction: R by FIFO, F by k-center inside each group, H by age.
+move capacity from F to R for D updates (a new firing restarts the D-update hold, DC-07); (4) quotas by (2-4);
+(5) eviction: R by FIFO, F by k-center inside each group, H by age.
 
 Determinism: the only random draw is k-means++ seeding of the binary-mode clustering, from `seed`.
 """
@@ -132,7 +139,7 @@ def ks_pvalue(A, B):
 class ThreeBin(Policy):
     name = "ThreeBin"
 
-    def __init__(self, k, seed=0, *, w=(0.5, 0.4, 0.1), q_min=20, gamma=0.5, margin_max=0.2,
+    def __init__(self, k, seed=0, *, q_min, w=(0.5, 0.4, 0.1), gamma=0.5, margin_max=0.2,
                  kappa_pi=0.1, kappa_x=0.01, delta=0.5, D=3, group_by="family", n_clusters=8, benign_group=False,
                  prior_window=7, bbse_window=7):
         super().__init__(k, seed)
@@ -146,18 +153,18 @@ class ThreeBin(Policy):
             raise ValueError("group_by is 'family' (attack-family labels) or 'cluster' (binary labels)")
         if not 0.0 <= float(delta) < 1.0:
             raise ValueError("delta must be in [0, 1)")
+        if q_min is None or int(q_min) < 0:
+            raise ValueError("q_min must be given (a non-negative integer); it is set by T2 / the grid")
         self.k_H = int(np.floor(wH * self.k))                  # DC-01 rounding
-        self.k_F = int(round(wF * self.k))
-        self.k_R = self.k - self.k_F - self.k_H
+        self.k_F_base = int(round(wF * self.k))                # w_F k, before D1
         self.q_min, self.gamma, self.margin_max = int(q_min), float(gamma), float(margin_max)
         self.kappa_pi, self.kappa_x, self.delta, self.D = float(kappa_pi), float(kappa_x), float(delta), int(D)
-        self.moved = int(np.floor(self.delta * self.k_F))      # capacity moved F -> R while a trigger is active
-        # Group admission rule (DC-12): at most G_max groups get an F quota, so that at all times
-        #   k_F >= G q_min  and  floor(delta k_F) <= k_F - G q_min   (both follow from G <= G_max).
-        # A group that would exceed G_max is 'unprotected': its rows live in R / H only and it gets no quota.
-        self.G_max = (self.k_F - self.moved) // self.q_min if self.q_min > 0 else 10 ** 9
+        # Admission limit (DC-12): the floors must fit next to H, G q_min <= k - k_H. A group beyond it is
+        # 'unprotected': no quota, its rows live in R / H only. Not reached with realistic settings.
+        self.G_max = (self.k - self.k_H) // self.q_min if self.q_min > 0 else 10 ** 9
         if self.G_max < 1:
-            raise ValueError("k_F - floor(delta k_F) < q_min: not even one group can be protected")
+            raise ValueError("k - k_H < q_min: not even one group can be protected")
+        self.k_F, self.k_R, self.moved = self.capacities(0, False)
         self.group_by, self.n_clusters, self.benign_group = group_by, int(n_clusters), bool(benign_group)
         self.prior_window, self.bbse_window = int(prior_window), int(bbse_window)
         # row store: seq -> (X, y, fam, rid, h); seq = arrival order (unique even if a rid is delivered twice)
@@ -166,7 +173,7 @@ class ThreeBin(Policy):
         self.R = deque()          # seqs, oldest first
         self.H = deque()          # seqs, oldest first
         self.F = {}               # group -> sorted list of seqs
-        self.groups = set()       # protected groups (have an F quota), at most G_max, admitted in arrival order
+        self.groups = set()       # protected groups (have an F quota), admitted in arrival order (at most G_max)
         self.unprotected = set()  # groups refused by the admission rule (DC-12)
         self.reached_qmin = set() # groups that have had >= q_min rows delivered (Proposition 1(c) premise)
         self._delivered = {}      # group -> rows delivered
@@ -180,6 +187,14 @@ class ThreeBin(Policy):
         # binary mode clustering state (DC-04)
         self._cent, self._cnt = None, None
         self.log = []
+
+    def capacities(self, G, active):
+        """(k_F(t), k_R(t), moved). D1: k_F = max(round(w_F k), G q_min), k_R takes the difference. Shift (step 3):
+        moved = min(floor(delta k_F), k_F - G q_min) (the delta cap), so k_F(t) >= G q_min also during a shift."""
+        k_F = max(self.k_F_base, G * self.q_min)
+        moved = min(int(np.floor(self.delta * k_F)), k_F - G * self.q_min) if active else 0
+        k_F -= moved
+        return k_F, self.k - self.k_H - k_F, moved
 
     # ------------------------------------------------------------------ harness hook
     def query_entropy(self, model, context, rows):
@@ -335,8 +350,9 @@ class ThreeBin(Policy):
             self._trigger_left = self.D
         active = self._trigger_left > 0
         G = len(self.groups)
-        assert self.k_F >= G * self.q_min and self.moved <= self.k_F - G * self.q_min   # guaranteed by DC-12
-        k_F_eff = self.k_F - self.moved if active else self.k_F
+        self.k_F, self.k_R, self.moved = self.capacities(G, active)
+        k_F_eff = self.k_F
+        assert k_F_eff >= G * self.q_min and self.k_R >= 0
         # (4) quotas
         quotas = largest_remainder_quotas(self.groups, self._priors(), k_F_eff, self.q_min, self.gamma)
         # (5) admission and eviction
@@ -346,21 +362,17 @@ class ThreeBin(Policy):
                 self.H.append(s)
             else:
                 self.R.append(s)
-        pool = {g: list(v) for g, v in self.F.items()}
-
-        def to_pool(s):
-            g = self._grp.get(s)
-            if g is None:
-                return False
-            pool.setdefault(g, []).append(s)
-            return len(pool[g]) <= quotas.get(g, 0)
-
+        offered = []
         while len(self.H) > self.k_H:                     # hard bin: by age
-            to_pool(self.H.popleft())
-        total = len(self.H) + len(self.R) + sum(min(quotas.get(g, 0), len(v)) for g, v in pool.items())
-        while total > self.k and self.R:                  # recent bin: FIFO
-            if not to_pool(self.R.popleft()):
-                total -= 1
+            offered.append(self.H.popleft())
+        while len(self.R) > self.k_R:                     # recent bin: FIFO
+            offered.append(self.R.popleft())
+        pool = {g: list(v) for g, v in self.F.items()}
+        offered_log = [(s, self._grp.get(s)) for s in offered]
+        for s in offered:                                 # P3: offer to F
+            g = self._grp.get(s)
+            if g is not None:
+                pool.setdefault(g, []).append(s)
         self.F = {}
         for g, v in pool.items():                         # representative bin: k-center inside each group
             v = sorted(v)
@@ -378,7 +390,8 @@ class ThreeBin(Policy):
         out = self._rows(self.all_seqs(), nf)
         self.log.append({
             "day": self.day, "n_new": n, "n_R": len(self.R), "n_F": sum(len(v) for v in self.F.values()),
-            "n_H": len(self.H), "k_R_eff": self.k - k_F_eff - self.k_H, "k_F_eff": k_F_eff, "k_H": self.k_H, "G": G,
+            "n_H": len(self.H), "k_R_eff": self.k_R, "k_F_eff": k_F_eff, "moved": self.moved, "k_H": self.k_H, "G": G,
+            "offered": offered_log,
             "quotas": dict(quotas), "quota_sum": sum(quotas.values()), "unprotected": sorted(self.unprotected),
             "pi_hat_bbse": None if pi_hat is None else pi_hat.tolist(), "bbse_l1": l1, "p_x": p_x, "fired": fired,
             "trigger_active": active, "N_c": self.counts_by_group(), "cluster_seconds": cluster_seconds,
