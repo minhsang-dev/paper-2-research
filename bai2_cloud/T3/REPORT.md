@@ -8,7 +8,7 @@
 - NCS decisions implemented: **D1** k_F(t) = max(w_F·k, G·q_min), k_R takes the difference; **D4** axioms P0–P3 of T2
   (`bai2_cloud/T2/prop1.md`) literally, with one test each, and the δ cap (moved = min(⌊δ·k_F⌋, k_F − G·q_min)).
   **q_min** is a required parameter with no default.
-- P0 makes bin sizes hard caps, so R no longer borrows unused F/H capacity. The context is below k until F fills (DC-11).
+- P0 makes bin sizes hard caps (no lending to R), so the context is below k until F fills (DC-11).
 - `tests/test_threebin.py`: 32 pytest tests, synthetic only, all pass (`test_output.txt`), covering every listed
   property, including I1–I3 through `run_replay`.
 - `run_absence_demo.py` → `absence_demo_results.json`: family 5 absent on days 5–9, k = 1,000, 3 seeds, q_min = 20
@@ -16,9 +16,8 @@
 
 ## Demo result (from `absence_demo_results.json`)
 Rows of family 5 in the context after day 9: FIFO 0, DualFIFO 0, CBRS-family 11 / 7 / 9, ThreeBin 11 / 7 / 9 (seeds 0/1/2).
-With fewer than q_min rows, ThreeBin kept all of them, matching CBRS-family. Return-day recall of family 5 was 1.0
-for all four policies: family 5 shares feature signatures with other families, so the demo shows retention but **no
-recall effect**. The stream was not changed after seeing results.
+Below q_min, ThreeBin kept every row, matching CBRS-family. Return-day recall of family 5 was 1.0 for all four
+policies (shared feature signatures), so the demo shows retention but **no recall effect**. The stream was not changed after seeing results.
 
 ## Open questions / decisions for the NCS
 1. Approve DC-01…DC-17 in `DESIGN_CHOICES.md`, mainly DC-02 (π̂_c from labels), DC-03 (KS + Bonferroni, very
