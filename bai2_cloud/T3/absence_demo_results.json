@@ -1,0 +1,429 @@
+{
+ "setup": {
+  "k": 1000,
+  "b": 600,
+  "eta": 0.2,
+  "tau": 0,
+  "a_fp": 50,
+  "n_days": 11,
+  "per_day": 4000,
+  "n_eval": 1000,
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "rare_family": 5,
+  "absent_days": [
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "return_day": 10,
+  "lgbm": {
+   "n_estimators": 50,
+   "verbosity": -1
+  },
+  "threebin_defaults": "ThreeBin() constructor defaults (DESIGN_CHOICES.md)"
+ },
+ "runs": [
+  {
+   "seed": 0,
+   "policy": "FIFO",
+   "rare_rows_in_context_by_day": [
+    3,
+    3,
+    1,
+    7,
+    7,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 1.0
+  },
+  {
+   "seed": 0,
+   "policy": "DualFIFO",
+   "rare_rows_in_context_by_day": [
+    3,
+    3,
+    4,
+    7,
+    8,
+    7,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9994651704389348
+  },
+  {
+   "seed": 0,
+   "policy": "CBRS-family",
+   "rare_rows_in_context_by_day": [
+    3,
+    3,
+    4,
+    10,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 11,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9999999999999999
+  },
+  {
+   "seed": 0,
+   "policy": "ThreeBin",
+   "rare_rows_in_context_by_day": [
+    3,
+    3,
+    4,
+    10,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 11,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9998717357399953
+  },
+  {
+   "seed": 1,
+   "policy": "FIFO",
+   "rare_rows_in_context_by_day": [
+    1,
+    2,
+    3,
+    4,
+    3,
+    1,
+    0,
+    0,
+    0,
+    0,
+    3
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 1.0
+  },
+  {
+   "seed": 1,
+   "policy": "DualFIFO",
+   "rare_rows_in_context_by_day": [
+    1,
+    2,
+    4,
+    5,
+    5,
+    3,
+    0,
+    0,
+    0,
+    0,
+    3
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9999547559940247
+  },
+  {
+   "seed": 1,
+   "policy": "CBRS-family",
+   "rare_rows_in_context_by_day": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    10
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 7,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 1.0
+  },
+  {
+   "seed": 1,
+   "policy": "ThreeBin",
+   "rare_rows_in_context_by_day": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    10
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 7,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 1.0
+  },
+  {
+   "seed": 2,
+   "policy": "FIFO",
+   "rare_rows_in_context_by_day": [
+    3,
+    5,
+    3,
+    3,
+    4,
+    1,
+    1,
+    0,
+    0,
+    0,
+    2
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9999779147644978
+  },
+  {
+   "seed": 2,
+   "policy": "DualFIFO",
+   "rare_rows_in_context_by_day": [
+    3,
+    5,
+    5,
+    5,
+    4,
+    4,
+    1,
+    0,
+    0,
+    0,
+    2
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 0,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9999779147644978
+  },
+  {
+   "seed": 2,
+   "policy": "CBRS-family",
+   "rare_rows_in_context_by_day": [
+    3,
+    5,
+    5,
+    8,
+    9,
+    9,
+    9,
+    9,
+    9,
+    9,
+    11
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 9,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9996902428052535
+  },
+  {
+   "seed": 2,
+   "policy": "ThreeBin",
+   "rare_rows_in_context_by_day": [
+    3,
+    5,
+    5,
+    8,
+    9,
+    9,
+    9,
+    9,
+    9,
+    9,
+    11
+   ],
+   "context_size_by_day": [
+    480,
+    960,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+   ],
+   "rare_rows_after_absence": 9,
+   "return_day_recall_rare": 1.0,
+   "return_day_auprc_w": 0.9999343625899395
+  }
+ ]
+}
