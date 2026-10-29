@@ -1,32 +1,30 @@
-# T2 REPORT: Proposition 1 and the choice of q_min
+# T2 REPORT: Proposition 1 and the choice of q_min (revised: D1 + D3 applied)
 
 ## What was done
-- `prop1.md`: assumptions and proofs of (a), (b), (c), then the q_min analysis. All numbers come from
-  `prop1_sim.py` (numpy, seed 20261029, synthetic only, ~1 min CPU) via `prop1_sim_results.json`.
-- (a) and (b) are proven. (c) is proven as an invariant, N_c ≥ min(q_min, M_c) at all times, under explicit policy
-  axioms P0–P3 (quota floor, eviction only above quota, rows leaving R/H offered to F). The floor uses at most
-  G·q_min slots.
-- Poisson recurrence model: P_miss(q) = (1−θ)^q · H(K−Gq), with H in closed form (Prop. 2).
-- Objective: J(q) = Σ ρ_c P_miss,c(q) + μ G q. The exact rule is to enumerate q ≤ q_rob. The robust closed form is
-  q_rob = round(ln(βΣρ/(μG))/β), β = −ln(1−θ). It is minimax over all absence laws, and q* ≤ q_rob is proven.
-  A variant that needs no price μ, using an emerging-family term, also has a closed form.
-- MC: 43 MC-vs-formula comparisons, largest |z| = 2.49, none above 3. The invariant had 0 violations in an explicit
-  three-compartment buffer. The MC argmin of J equals the theoretical q* (20 in the illustrative base setting).
+- `prop1.md` contains the assumptions and proofs of (a), (b) and (c), followed by the q_min rule. All numbers come from
+  `prop1_sim.py` (numpy, seed 20261029, synthetic only, about 1.5 min of CPU) through `prop1_sim_results.json`.
+- (a) and (b) are proven. (c) is proven as an invariant, N_c ≥ min(q_min, M_c), under policy axioms P0–P3.
+- **D1 (hybrid allocation).** In the normal state k_R = k_R0, and the floor is paid for inside F. In a shift state
+  the recent bin is k_R0 + min(δk_F0, k_F0 − G·q), so it loses at most G·q_min. Parts (a) and (b), Lemmas 1–2 and the
+  invariant are unchanged, because they only need k_F ≥ G·q_min. Only the cost sentence of Theorem 1 and Section 4 changed.
+- **D3 (primary rule).** J(q) = missed recurring reappearances + missed emerging families, per day, with no μ.
+  The exact rule enumerates q from q_thr to q_rob.
+  The closed form is q_rob = round(max(q̃, κ)), with q̃ = [ln(βA/(φρ_e a_e G)) + a_e(k − k_H)]/(β + a_e G).
+  q_thr ≤ q* ≤ q_rob is proven (Theorem 3). The μ rule is kept as Appendix A.
+- MC: 59 MC-vs-formula comparisons, largest |z| = 2.49, none above 3. The invariant had 0 violations, and the observed
+  recent-bin sizes equal the D1 values. In the illustrative base setting, theory gives q* = 74. The MC minimum is at 72,
+  which is 0.13 SE away, so the two agree within MC error.
 
-## Open (not proven)
-- (c) for the cluster variant (binary labels, groups re-estimated), and when the poisoning filter can remove
-  already-trusted rows.
-- Monotonicity of the exact q* in k, λ, r, ρ, G is seen numerically only. Unimodality of J outside the flushed
-  regime is also unproven; the enumeration rule does not need it.
-- All parameter values are illustrative and not calibrated.
+## OPEN
+- (c) is unproven for the cluster variant and for trusted rows that are later removed by the poisoning filter.
+- The shift state may be correlated with reappearance (R6 assumes independence).
+- The smaller F share left for common groups is not priced. When shifts are rare (φ → 0), q* goes to the cap
+  ⌊k_F0/G⌋. A cap or the μ appendix is needed there.
+- Monotonicity of the exact q* is numerical only, and unimodality of J is unproven.
+- θ, φ, ρ, ρ_e and r_e need values. All parameter values used are illustrative.
+- Whether T3 adopts P0–P3 as written is still open.
 
-## Decisions needed from the NCS
-1. **Reading of "recent bin shrinks by G·q_min".** With fixed ratios w_R:w_F:w_H, k_R does not depend on q_min, and
-   the floor is paid for inside F. Section 4 assumes k_R = k − k_H − G·q_min. Please confirm, or choose the
-   fixed-ratio reading. In that case the cost term must be redefined as F-share loss of common groups.
-2. **Coverage parameter θ** (probability that one stored row covers a reappearing variant) is not in the outline.
-   It needs a dev-data estimate or a fixed value.
-3. **Price μ vs. the same-currency variant (ρ_e, r_e).** One of the two must be chosen before registration. This
-   affects T5.
-4. Should T3 implement P0–P3 literally? In particular: rows leaving R/H are offered to F, and a shift never takes
-   k_F below G·q_min. Theorem 1 relies on both.
+## Decisions still needed from the NCS
+1. The value or estimation plan for θ, and estimates of φ, ρ, ρ_e and r_e on dev data. These feed T5.
+2. Whether T3 implements P0–P3 literally: rows leaving R/H are offered to F, and a shift never takes k_F below G·q_min.
+3. How to bound q when φ is near 0: a fixed cap, or the μ price.

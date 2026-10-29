@@ -12,6 +12,9 @@ Sections (keys of the JSON):
   qstar         q_min* (exact enumeration, robust closed form, emerging-family variant) and MC argmin check.
   sensitivity   q_min* (theory) as each of k, G, lambda, r, rho, theta, mu varies.
   theorem_bound q*_exact <= q_rob on random parameter sets; objective gap of using q_rob instead of q*_exact.
+  (pmiss, qstar, sensitivity, theorem_bound use the full-recency reading k_R = K - G q and the price mu: Appendix A.)
+  hybrid        D1 + D3 (primary rule): hybrid capacities, same-currency objective, MC of both miss terms + argmin.
+  hybrid_sensitivity, hybrid_theorem   q* of the primary rule vs each parameter; q_thr <= q* <= q_rob on random sets.
 """
 import json
 import math
@@ -258,6 +261,7 @@ def check_c():
         viol, max_size, min_slack, kH_max, kF_min, max_abs = 0, 0, 10 ** 9, 0, 10 ** 9, np.zeros(G, int)
         last_seen = np.zeros(G, int)
         fifo_lost, tc_lost = 0, 0
+        kR_seen = set()
         for day in range(days):
             active = np.ones(G, bool)
             active[1:4] = rng.random(3) < 0.3
@@ -280,6 +284,7 @@ def check_c():
             max_size = max(max_size, pol.size())
             kH_max = max(kH_max, len(pol.H))
             kF_min = min(kF_min, pol.kF)
+            kR_seen.add(pol.kR)
             nf = np.bincount([r[0] for r in fifo], minlength=G)
             fifo_lost += int(((nf == 0) & (pol.seen >= pol.q)).sum())
             tc_lost += int(((n == 0) & (pol.seen >= pol.q)).sum())
@@ -287,6 +292,9 @@ def check_c():
                         max_context_size=max_size, max_H_size=kH_max, H_cap=0.1 * cf["k"],
                         min_kF=kF_min, G_qmin=cf["G"] * cf["q"],
                         max_kR_possible=cf["k"] - pol.kH - cf["G"] * cf["q"], kR_without_floor=cf["k"] - pol.kH,
+                        kR_values_observed=sorted(kR_seen),
+                        kR_hybrid_formula=[pol.k - pol.kH - pol.kF0, pol.k - pol.kH - pol.kF0
+                                           + min(int(pol.delta * pol.kF0), pol.kF0 - cf["G"] * cf["q"])],
                         max_absence_days_per_group=max_abs.tolist(),
                         group_days_admitted_but_absent_from_FIFO=fifo_lost,
                         group_days_admitted_but_absent_from_3C=tc_lost))
@@ -433,6 +441,174 @@ def check_theorem_bound(n_sets=300):
                 median_J_gap_using_q_robust=float(np.median(gaps)))
 
 
+# ----------------------------------------------------------------------------- D1 + D3: hybrid allocation, primary rule
+# D1 (hybrid): default ratios fix k_R0 = k - k_H - k_F0 and k_F0; the floor costs nothing in R in the normal state.
+# In a shift state (fraction phi of the time) R grows to k_R0 + min(delta*k_F0, k_F0 - G q): the floor caps the shift.
+# D3: primary objective = missed recurring reappearances + missed emerging families, per day (no price mu).
+BASE_H = dict(k=5000, wR=0.5, wF=0.4, wH=0.1, delta=0.8, phi=0.2, G=10, n_rec=3, lam=2000.0, r=0.002, theta=0.1,
+              rho=1 / 14, r_e=0.002, rho_e=0.05)
+
+
+def hyb_caps(P):
+    kH = int(math.floor(P["wH"] * P["k"]))
+    kF0 = int(round(P["wF"] * P["k"]))
+    return P["k"] - kH - kF0, kF0, kH
+
+
+def kR_shift(q, P):
+    kR0, kF0, _ = hyb_caps(P)
+    return kR0 + min(int(P["delta"] * kF0), kF0 - P["G"] * q)
+
+
+def q_thr(P):
+    _, kF0, _ = hyb_caps(P)
+    return max(0, math.floor((kF0 - int(P["delta"] * kF0)) / P["G"]))
+
+
+def q_cap(P):
+    return hyb_caps(P)[1] // P["G"]
+
+
+def pmiss_h(q, P):
+    kR0 = hyb_caps(P)[0]
+    s = P["rho"] / P["lam"]
+    h = (1 - P["phi"]) * H(kR0, P["r"], P["theta"], s) + P["phi"] * H(kR_shift(q, P), P["r"], P["theta"], s)
+    return (1 - P["theta"]) ** q * h
+
+
+def emiss_h(q, P):
+    kR0 = hyb_caps(P)[0]
+    u = 1 - P["theta"] * P["r_e"]
+    return (1 - P["phi"]) * u ** kR0 + P["phi"] * u ** kR_shift(q, P)
+
+
+def Jh(q, P):
+    return P["n_rec"] * P["rho"] * pmiss_h(q, P) + P["rho_e"] * emiss_h(q, P)
+
+
+def qstar_h(P):
+    vals = [Jh(q, P) for q in range(q_cap(P) + 1)]
+    return int(np.argmin(vals)), vals
+
+
+def qrob_h(P):
+    """Closed form with H = 1 (worst case over absence laws), clipped to [q_thr, q_cap]."""
+    kR0, kF0, _ = hyb_caps(P)
+    beta = -math.log(1 - P["theta"])
+    ae = -math.log(1 - P["theta"] * P["r_e"])
+    A = P["n_rec"] * P["rho"]
+    lo, hi = q_thr(P), q_cap(P)
+    if P["phi"] == 0:
+        return hi, float("inf")
+    qc = (math.log(beta * A / (P["phi"] * P["rho_e"] * ae * P["G"])) + ae * (kR0 + kF0)) / (beta + ae * P["G"])
+    f = lambda q: A * (1 - P["theta"]) ** q + P["rho_e"] * emiss_h(q, P)
+    kink = (kF0 - int(P["delta"] * kF0)) / P["G"]      # real q where the floor starts to cap the shift
+    qe = max(qc, kink)                                     # real minimiser of the convex worst-case objective
+    cands = sorted(set(min(max(c, lo), hi) for c in (math.floor(qe), math.ceil(qe))))
+    return min(cands, key=f), qc
+
+
+def mc_hybrid(P, qs, reps, key):
+    """Row-level MC of one reappearance and one emerging family under the hybrid capacities.
+    State: shift with prob. phi (independent). Recurring family as in mc_pmiss; emerging family: FIFO window of k_R
+    rows, each an emerging-family row w.p. r_e that covers w.p. theta."""
+    rng = ss(8, key)
+    kR0, kF0, _ = hyb_caps(P)
+    Kmax = kR0 + int(P["delta"] * kF0)
+    miss = np.zeros(len(qs))
+    emiss = np.zeros(len(qs))
+    done = 0
+    while done < reps:
+        m = min(4000, reps - done)
+        cov = (rng.random((m, Kmax)) < P["r"]) & (rng.random((m, Kmax)) < P["theta"])
+        has = cov.any(1)
+        d0 = np.where(has, np.argmax(cov[:, ::-1], 1), 10 ** 9)
+        Jrows = np.floor(P["lam"] * rng.exponential(1 / P["rho"], m)).astype(np.int64)
+        f0 = rng.geometric(P["theta"], m) - 1
+        ecov = (rng.random((m, Kmax)) < P["r_e"]) & (rng.random((m, Kmax)) < P["theta"])
+        ehas = ecov.any(1)
+        e0 = np.where(ehas, np.argmax(ecov[:, ::-1], 1), 10 ** 9)   # newest covering emerging row, rows back
+        shift = rng.random(m) < P["phi"]
+        for i, q in enumerate(qs):
+            kR = np.where(shift, kR_shift(q, P), kR0)
+            miss[i] += ((Jrows + d0 >= kR) & (f0 >= q)).sum()
+            emiss[i] += (e0 >= kR).sum()
+        done += m
+    return miss / reps, emiss / reps
+
+
+def check_hybrid():
+    P = BASE_H
+    reps = 40000 if QUICK else 200000
+    kR0, kF0, kH = hyb_caps(P)
+    lo, hi = q_thr(P), q_cap(P)
+    qe, vals = qstar_h(P)
+    qr, qc = qrob_h(P)
+    qs = sorted(set([0, 10, lo, qe, 60, 100, 150, hi]))
+    pm, em = mc_hybrid(P, qs, reps, 0)
+    pth = np.array([pmiss_h(q, P) for q in qs])
+    eth = np.array([emiss_h(q, P) for q in qs])
+    zp = ((pm - pth) / np.sqrt(np.maximum(pth * (1 - pth), 1e-300) / reps)).tolist()
+    ze = ((em - eth) / np.sqrt(np.maximum(eth * (1 - eth), 1e-300) / reps)).tolist()
+    grid = list(range(max(0, qe - 12), min(hi, qe + 12) + 1))
+    pg, eg = mc_hybrid(P, grid, reps, 1)
+    Jmc = P["n_rec"] * P["rho"] * pg + P["rho_e"] * eg
+    Jse = np.sqrt((P["n_rec"] * P["rho"]) ** 2 * pg * (1 - pg) / reps + P["rho_e"] ** 2 * eg * (1 - eg) / reps)
+    i_min = int(np.argmin(Jmc))
+    gap = float(Jmc[grid.index(qe)] - Jmc[i_min])
+    gap_se = float(math.sqrt(Jse[grid.index(qe)] ** 2 + Jse[i_min] ** 2))
+    return dict(params=P, kR0=kR0, kF0=kF0, kH=kH, kR_shift_no_floor=kR0 + int(P["delta"] * kF0),
+                q_thr=lo, q_cap=hi, q_exact=qe, q_robust=qr, q_robust_continuous=qc,
+                J_at_q_exact=vals[qe], J_at_q_thr=vals[lo], J_at_0=vals[0], J_at_q_robust=vals[qr],
+                kR_shift_at_q_exact=kR_shift(qe, P), pmiss_at_0=pmiss_h(0, P), pmiss_at_q_exact=pmiss_h(qe, P),
+                F_share_left_for_proportional_at_q_exact=kF0 - P["G"] * qe,
+                mc_q=qs, mc_reps=reps, mc_pmiss=pm.tolist(), th_pmiss=pth.tolist(), z_pmiss=zp,
+                mc_emiss=em.tolist(), th_emiss=eth.tolist(), z_emiss=ze,
+                mc_grid=grid, mc_J=Jmc.tolist(), mc_J_se=Jse.tolist(), mc_argmin=grid[i_min],
+                gap_J_theory_vs_mc_argmin=gap, gap_over_se=gap / gap_se if gap_se else None)
+
+
+def sensitivity_h():
+    sweeps = dict(k=[2000, 5000, 10000, 20000], G=[3, 5, 10, 20, 40], lam=[100, 300, 1000, 2000, 10000],
+                  r=[1e-4, 1e-3, 2e-3, 1e-2, 5e-2], rho=[1 / 60, 1 / 30, 1 / 14, 1 / 7, 1 / 2, 2.0],
+                  theta=[0.02, 0.05, 0.1, 0.3, 0.6], phi=[0.0, 0.05, 0.2, 0.5, 1.0], delta=[0.2, 0.5, 0.8, 1.0],
+                  rho_e=[0.005, 0.05, 0.5, 5.0])
+    out = {}
+    for name, vals in sweeps.items():
+        rows = []
+        for v in vals:
+            Q = {**BASE_H, name: v}
+            qe, _ = qstar_h(Q)
+            qr, qc = qrob_h(Q)
+            rows.append(dict(value=v, q_thr=q_thr(Q), q_cap=q_cap(Q), q_exact=qe, q_robust=qr,
+                             q_robust_cont=qc))
+        out[name] = rows
+    return out
+
+
+def check_theorem_h(n_sets=300):
+    """Theorem 3: q_thr <= q*_exact <= q_rob (hybrid, same-currency objective) on random parameter sets."""
+    rng = ss(9)
+    bad_lo, bad_hi, gaps = 0, 0, []
+    for _ in range(n_sets):
+        wH = float(rng.uniform(0.0, 0.1))
+        wF = float(rng.uniform(0.1, 0.6))
+        Q = dict(k=int(rng.integers(1000, 20000)), wH=wH, wF=wF, wR=1 - wH - wF, delta=float(rng.uniform(0, 1)),
+                 phi=float(rng.uniform(0.01, 1)), G=int(rng.integers(2, 40)), n_rec=int(rng.integers(1, 6)),
+                 lam=float(10 ** rng.uniform(1.5, 4.5)), r=float(10 ** rng.uniform(-4, -1)),
+                 theta=float(rng.uniform(0.01, 0.8)), rho=float(10 ** rng.uniform(-2, 0.5)),
+                 r_e=float(10 ** rng.uniform(-4, -1)), rho_e=float(10 ** rng.uniform(-3, 1)))
+        qe, vals = qstar_h(Q)
+        qr, _ = qrob_h(Q)
+        tol = 1e-12 * max(1.0, abs(vals[qe]))           # ties below float resolution are not violations
+        lo = min(q_thr(Q), q_cap(Q))
+        bad_lo += int(qe < lo and vals[lo] > vals[qe] + tol)
+        bad_hi += int(qe > qr and vals[qr] > vals[qe] + tol)
+        gaps.append(vals[qr] - vals[qe])
+    return dict(n_sets=n_sets, violations_q_exact_lt_q_thr=bad_lo, violations_q_exact_gt_q_robust=bad_hi,
+                max_J_gap_using_q_robust=float(max(gaps)), median_J_gap_using_q_robust=float(np.median(gaps)))
+
+
 def main():
     res = dict(seed=SEED, quick=QUICK, numpy=np.__version__)
     res["a_fifo"] = check_a()
@@ -441,18 +617,24 @@ def main():
     res["pmiss"], res["qstar"] = check_pmiss_qstar()
     res["sensitivity"] = sensitivity()
     res["theorem_bound"] = check_theorem_bound()
+    res["hybrid"] = check_hybrid()
+    res["hybrid_sensitivity"] = sensitivity_h()
+    res["hybrid_theorem"] = check_theorem_h()
     zs = [x["z"] for x in res["a_fifo"]["full_bin"]] + [x["z_P0"] for x in res["a_fifo"]["absence"]]
     zs += [x["z"] for x in res["b_uniform"]] + [x["z_P0"] for x in res["b_uniform"]]
     zs += res["pmiss"]["z"] + [v for e in res["pmiss"]["extra_points"] for v in e["z"]]
     em = res["qstar"]["variant_emerging"]
     n_e = em["emerging_reps"]
     zs += [(m - t) / math.sqrt(t * (1 - t) / n_e) for m, t in zip(em["emerging_mc"], em["emerging_theory"])]
+    zs += res["hybrid"]["z_pmiss"] + res["hybrid"]["z_emiss"]
     zs = [v for v in zs if v is not None]
     res["summary"] = dict(n_z=len(zs), max_abs_z=max(abs(v) for v in zs),
                           n_abs_z_gt_2=sum(abs(v) > 2 for v in zs), n_abs_z_gt_3=sum(abs(v) > 3 for v in zs),
                           expected_n_abs_z_gt_2_if_theory_true=round(0.0455 * len(zs), 2),
                           c_invariant_violations=sum(x["invariant_violations"] for x in res["c_policy"]),
-                          qstar_mc_argmin_equals_theory=res["qstar"]["mc_argmin"] == res["qstar"]["q_exact"])
+                          qstar_mc_argmin_equals_theory=res["qstar"]["mc_argmin"] == res["qstar"]["q_exact"],
+                          hybrid_mc_argmin_equals_theory=res["hybrid"]["mc_argmin"] == res["hybrid"]["q_exact"],
+                          hybrid_theory_q_within_2se_of_mc_min=res["hybrid"]["gap_over_se"] < 2)
     OUT.write_text(json.dumps(res, indent=1, default=float))
     print(OUT)
 
