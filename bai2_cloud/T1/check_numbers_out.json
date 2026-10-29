@@ -1,0 +1,13 @@
+{
+  "prop1a_exact_(1-r)^kR": 0.6065154956247782,
+  "prop1a_bound_exp(-r*kR)": 0.6065306597126334,
+  "cure_B1000_short_long": [
+    750,
+    250
+  ],
+  "cure_B2000_short_long": [
+    1500,
+    500
+  ],
+  "kH_cap_at_k2000": 200.0
+}
