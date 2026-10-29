@@ -1,8 +1,3 @@
-3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd  ./.pytest_cache/.gitignore
-37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4  ./.pytest_cache/CACHEDIR.TAG
-73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad  ./.pytest_cache/README.md
-d01767e0a064a10485f8dd3fd4bf23ee1023416c3309141f8364e5f8c0b2b4fd  ./.pytest_cache/v/cache/lastfailed
-b9e7704ab69771cf8e2c17cd3f652aa920b870e3cba55b60b2532f2daad48b07  ./.pytest_cache/v/cache/nodeids
 0f8375615f79303c34d8496fc1cf3204f5c7ce7f47b62f8400144472c270e73b  ./DESIGN_CHOICES.md
 241aa4252f8db4446c4894b6627b472795aa2096d6eae1d23cb831897466ef0b  ./REPORT.md
 858e8dd8f15bb4988f187eb521b8d1b4b960d70dbe1ec403fdb154586b81a5e2  ./absence_demo_results.json
