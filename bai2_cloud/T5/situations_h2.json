@@ -1,0 +1,1470 @@
+{
+ "manifest_sha256": "207817c65258891b891b5fa89b224825e1fb960858186d75e6b37cc38379ed08",
+ "script_sha256": "2128457d42dd2540c2a651a9c17278d962b1a4ce3046d6e5d7d243a7480a35ce",
+ "settings": {
+  "b": 2000,
+  "eta": 0.2,
+  "policy_labels_per_day": 1600,
+  "s_grid": [
+   0.0025,
+   0.005,
+   0.009
+  ]
+ },
+ "summary": {
+  "n_root_days": 16,
+  "root_days_with_rare_family": [
+   "2018-02-21"
+  ],
+  "root_days_with_recurring_situations": [
+   "2018-02-14",
+   "2018-02-15",
+   "2018-02-16",
+   "2018-02-21",
+   "2019-04-24",
+   "2019-04-25",
+   "2019-04-26",
+   "2019-04-27",
+   "2019-04-28",
+   "2019-04-29"
+  ],
+  "root_days_with_rare_and_recurring": [
+   "2018-02-21"
+  ],
+  "n_recurring_situations": 63,
+  "n_recurring_root_family_pairs": 21,
+  "n_root_days_any_H2_situation": 10,
+  "n_root_days_injection_feasible": 10,
+  "n_injection_root_family_pairs_s0.005": 19
+ },
+ "root_days": [
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-14",
+   "n_root_flows": 2138838,
+   "attack_flows_root": 575194,
+   "attack_share_root": 0.2689282685271161,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|0",
+     "family": "FTP-BruteForce",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.6723296835502457,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 289.2928788205355
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|1",
+     "family": "FTP-BruteForce",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.6723296835502457,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 289.2928788205355
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|2",
+     "family": "FTP-BruteForce",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.6723296835502457,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 289.2928788205355
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|3",
+     "family": "SSH-Bruteforce",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.32767031644975436,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 140.99137888607163
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|4",
+     "family": "SSH-Bruteforce",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.32767031644975436,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 140.99137888607163
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-14|recurring|5",
+     "family": "SSH-Bruteforce",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.32767031644975436,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 140.99137888607163
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "FTP-BruteForce",
+     "root_share": 0.6723296835502457,
+     "s=0.0025": {
+      "eval_rows_per_day": 53.904944514437375,
+      "labelled_rows_per_day": 0.43123789502407267,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0012214675082410204
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 108.05149925220412,
+      "labelled_rows_per_day": 0.8644086652911929,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.002449073044161644
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 195.1926051928975,
+      "labelled_rows_per_day": 1.5615348308950923,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.004426124946613021
+     }
+    },
+    {
+     "family": "SSH-Bruteforce",
+     "root_share": 0.32767031644975436,
+     "s=0.0025": {
+      "eval_rows_per_day": 99.33967193647591,
+      "labelled_rows_per_day": 0.7947146260992173,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.005142476191114479
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 199.07915901662201,
+      "labelled_rows_per_day": 1.5926277650313434,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.01031079397112903
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 359.49999795129725,
+      "labelled_rows_per_day": 2.8759900467920265,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.018634341071939547
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-15",
+   "n_root_flows": 1665321,
+   "attack_flows_root": 97340,
+   "attack_share_root": 0.058451193493626756,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|0",
+     "family": "DoS_attacks-GoldenEye",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.6297513868913088,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 58.89577953945567
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|1",
+     "family": "DoS_attacks-GoldenEye",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.6297513868913088,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 58.89577953945567
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|2",
+     "family": "DoS_attacks-GoldenEye",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.6297513868913088,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 58.89577953945567
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|3",
+     "family": "DoS_attacks-Slowloris",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.37024861310869117,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 34.626490939673445
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|4",
+     "family": "DoS_attacks-Slowloris",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.37024861310869117,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 34.626490939673445
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-15|recurring|5",
+     "family": "DoS_attacks-Slowloris",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.37024861310869117,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 34.626490939673445
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "DoS_attacks-GoldenEye",
+     "root_share": 0.6297513868913088,
+     "s=0.0025": {
+      "eval_rows_per_day": 11.261795785832268,
+      "labelled_rows_per_day": 0.09009467105081162,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0014735043154378608
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 22.57890572623979,
+      "labelled_rows_per_day": 0.18063185680054708,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.002954413175174404
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 40.80235627192005,
+      "labelled_rows_per_day": 0.3264199541963351,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.005339408674810652
+     }
+    },
+    {
+     "family": "DoS_attacks-Slowloris",
+     "root_share": 0.37024861310869117,
+     "s=0.0025": {
+      "eval_rows_per_day": 18.857360250733365,
+      "labelled_rows_per_day": 0.15085938438855892,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.004262876948197352
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 37.80589859594566,
+      "labelled_rows_per_day": 0.3024481958666094,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0085471753885967
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 68.31486737189188,
+      "labelled_rows_per_day": 0.5465207585150244,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.015447014249219668
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-16",
+   "n_root_flows": 1784129,
+   "attack_flows_root": 205626,
+   "attack_share_root": 0.11525287689399141,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|0",
+     "family": "DoS_attacks-SlowHTTPTest",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.5133105735655997,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 94.65638037698079
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|1",
+     "family": "DoS_attacks-SlowHTTPTest",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.5133105735655997,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 94.65638037698079
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|2",
+     "family": "DoS_attacks-SlowHTTPTest",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.5133105735655997,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 94.65638037698079
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|3",
+     "family": "DoS_attacks-Hulk",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.48668942643440033,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 89.74734175847209
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|4",
+     "family": "DoS_attacks-Hulk",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.48668942643440033,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 89.74734175847209
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-16|recurring|5",
+     "family": "DoS_attacks-Hulk",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.48668942643440033,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 89.74734175847209
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "DoS_attacks-SlowHTTPTest",
+     "root_share": 0.5133105735655997,
+     "s=0.0025": {
+      "eval_rows_per_day": 29.879947773540884,
+      "labelled_rows_per_day": 0.2390386606346075,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.002376286523984048
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 59.901051866037555,
+      "labelled_rows_per_day": 0.4792065677446898,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.004764514186279574
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 108.23092967300289,
+      "labelled_rows_per_day": 0.8658441006467235,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.008610741581863488
+     }
+    },
+    {
+     "family": "DoS_attacks-Hulk",
+     "root_share": 0.48668942643440033,
+     "s=0.0025": {
+      "eval_rows_per_day": 31.411656425108223,
+      "labelled_rows_per_day": 0.25129228576281293,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0026433544591323624
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 62.971220518967705,
+      "labelled_rows_per_day": 0.5037678286342636,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.005299992106501571
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 113.77678839207266,
+      "labelled_rows_per_day": 0.9102108109203406,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.009578492293384776
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-20",
+   "n_root_flows": 1829859,
+   "attack_flows_root": 288589,
+   "attack_share_root": 0.1577110586116198,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 6
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-21",
+   "n_root_flows": 2712803,
+   "attack_flows_root": 1035761,
+   "attack_share_root": 0.381804723748831,
+   "rare_families": {
+    "8": {
+     "cal": 345,
+     "eval": 1725,
+     "policy": 1380,
+     "share_of_attack_flows": 0.0033308842483932106
+    }
+   },
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|0",
+     "family": "DDOS_attack-LOIC-UDP",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.0033308842483932106,
+     "rare_and_recurring": true,
+     "expected_labelled_rows_per_day": 1.5656865053139741
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|1",
+     "family": "DDOS_attack-LOIC-UDP",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.0033308842483932106,
+     "rare_and_recurring": true,
+     "expected_labelled_rows_per_day": 1.5656865053139741
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|2",
+     "family": "DDOS_attack-LOIC-UDP",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.0033308842483932106,
+     "rare_and_recurring": true,
+     "expected_labelled_rows_per_day": 1.5656865053139741
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|3",
+     "family": "DDOS_attack-HOIC",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.9966691157516068,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 608.5634860956615
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|4",
+     "family": "DDOS_attack-HOIC",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.9966691157516068,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 608.5634860956615
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|5",
+     "family": "DDOS_attack-HOIC",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.9966691157516068,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 608.5634860956615
+    }
+   ],
+   "rare_situations": [
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|0",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|1",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|2",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|3",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|4",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|5",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|6",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|7",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|8",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|feature|9",
+     "status": "rare at root; realised share under feature reweighting not in manifest [VERIFY at export]"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|0",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|1",
+     "status": "not rare after temper 0.5: share 0.0547"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|2",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|3",
+     "status": "not rare after temper 0.5: share 0.0547"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|4",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|5",
+     "status": "not rare after temper 0.5: share 0.0547"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|6",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|7",
+     "status": "not rare after temper 0.5: share 0.0547"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|8",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|prior|9",
+     "status": "rare (temper 0 keeps family shares)"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|0",
+     "status": "rare and recurring"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|1",
+     "status": "rare and recurring"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|2",
+     "status": "rare and recurring"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|3",
+     "status": "rare on pre and reintroduction days; not rare while the other family is absent"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|4",
+     "status": "rare on pre and reintroduction days; not rare while the other family is absent"
+    },
+    {
+     "scenario": "NF-CICIDS2018-v3|2018-02-21|recurring|5",
+     "status": "rare on pre and reintroduction days; not rare while the other family is absent"
+    }
+   ],
+   "injection_candidates": [
+    {
+     "family": "DDOS_attack-LOIC-UDP",
+     "root_share": 0.0033308842483932106,
+     "s=0.0025": {
+      "eval_rows_per_day": 190.97236051710098,
+      "labelled_rows_per_day": 1.5257067605743113,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.7499262649377066
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 382.53727537617544,
+      "labelled_rows_per_day": 3.056151500469595,
+      "evaluable_per_family_rule": true,
+      "down_weight": null
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 690.2805530078296,
+      "labelled_rows_per_day": 5.5147733057361314,
+      "evaluable_per_family_rule": true,
+      "down_weight": null
+     }
+    },
+    {
+     "family": "DDOS_attack-HOIC",
+     "root_share": 0.9966691157516068,
+     "s=0.0025": {
+      "eval_rows_per_day": 1.030518316858286,
+      "labelled_rows_per_day": 0.008226107403825735,
+      "evaluable_per_family_rule": false,
+      "down_weight": 8.375980243699218e-06
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 2.0662044179143577,
+      "labelled_rows_per_day": 0.016493466806521567,
+      "evaluable_per_family_rule": false,
+      "down_weight": 1.679405084038185e-05
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 3.734148587716829,
+      "labelled_rows_per_day": 0.029807823646120262,
+      "evaluable_per_family_rule": false,
+      "down_weight": 3.035130681647214e-05
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 3,
+   "n_rare_situations": 22,
+   "n_rare_situations_unverified": 10
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-22",
+   "n_root_flows": 2040128,
+   "attack_flows_root": 2538,
+   "attack_share_root": 0.001244039589672805,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-02-28",
+   "n_root_flows": 2032727,
+   "attack_flows_root": 84327,
+   "attack_share_root": 0.04148466567325568,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 6
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-03-01",
+   "n_root_flows": 2147533,
+   "attack_flows_root": 103825,
+   "attack_share_root": 0.04834617209607489,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 6
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-CICIDS2018-v3",
+   "root_day": "2018-03-02",
+   "n_root_flows": 1830361,
+   "attack_flows_root": 207703,
+   "attack_share_root": 0.11347652184459787,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 6
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-23",
+   "n_root_flows": 5843034,
+   "attack_flows_root": 262207,
+   "attack_share_root": 0.044875145344011345,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 6
+   },
+   "recurring": [],
+   "rare_situations": [],
+   "injection_candidates": [],
+   "n_recurring_situations": 0,
+   "n_recurring_families": 0,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-24",
+   "n_root_flows": 4338128,
+   "attack_flows_root": 1230077,
+   "attack_share_root": 0.28355018570221996,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|0",
+     "family": "scanning",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.891627109522412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 404.5137270941398
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|1",
+     "family": "scanning",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.891627109522412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 404.5137270941398
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|2",
+     "family": "scanning",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.891627109522412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 404.5137270941398
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|3",
+     "family": "dos",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.10837289047758798,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 49.16665428279265
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|4",
+     "family": "dos",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.10837289047758798,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 49.16665428279265
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-24|recurring|5",
+     "family": "dos",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.10837289047758798,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 49.16665428279265
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "scanning",
+     "root_share": 0.891627109522412,
+     "s=0.0025": {
+      "eval_rows_per_day": 20.612861390485513,
+      "labelled_rows_per_day": 0.16490293554558919,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0003046242666121708
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 41.32502446131931,
+      "labelled_rows_per_day": 0.33060028473874065,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.000610779308433448
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 74.6728308617306,
+      "labelled_rows_per_day": 0.5973828077738752,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0011038403041415794
+     }
+    },
+    {
+     "family": "dos",
+     "root_share": 0.10837289047758798,
+     "s=0.0025": {
+      "eval_rows_per_day": 130.65960071654226,
+      "labelled_rows_per_day": 1.0452770226718593,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.020620049903464957
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 261.803886907392,
+      "labelled_rows_per_day": 2.094431529657704,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.04134371814815336
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 472.64964217686156,
+      "labelled_rows_per_day": 3.7811979208318,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.07471907084091085
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-25",
+   "n_root_flows": 6373074,
+   "attack_flows_root": 2938987,
+   "attack_share_root": 0.4611568922626663,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 9
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|0",
+     "family": "dos",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.02386842813527246,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 17.611344907667053
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|1",
+     "family": "dos",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.02386842813527246,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 17.611344907667053
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|2",
+     "family": "dos",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.02386842813527246,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 17.611344907667053
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|3",
+     "family": "injection",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.12990088081369533,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 95.84750210002144
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|4",
+     "family": "injection",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.12990088081369533,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 95.84750210002144
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|5",
+     "family": "injection",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.12990088081369533,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 95.84750210002144
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|6",
+     "family": "ddos",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.8462306910510322,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 624.3922091178396
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|7",
+     "family": "ddos",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.8462306910510322,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 624.3922091178396
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-25|recurring|8",
+     "family": "ddos",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.8462306910510322,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 624.3922091178396
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "dos",
+     "root_share": 0.02386842813527246,
+     "s=0.0025": {
+      "eval_rows_per_day": 227.89029514303405,
+      "labelled_rows_per_day": 1.8231224948568947,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.10249711578837327
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 456.40310514439705,
+      "labelled_rows_per_day": 3.6512251086393603,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.2055092924601052
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 823.3248126231288,
+      "labelled_rows_per_day": 6.5865989826237605,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.3714098312775463
+     }
+    },
+    {
+     "family": "injection",
+     "root_share": 0.12990088081369533,
+     "s=0.0025": {
+      "eval_rows_per_day": 213.7166222124754,
+      "labelled_rows_per_day": 1.7097331096278034,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.016787411549275152
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 428.0474944628872,
+      "labelled_rows_per_day": 3.424380219654806,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.03365918195055671
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 772.2611551693902,
+      "labelled_rows_per_day": 6.1780897167418,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.06083107454434618
+     }
+    },
+    {
+     "family": "ddos",
+     "root_share": 0.8462306910510322,
+     "s=0.0025": {
+      "eval_rows_per_day": 58.2765173420481,
+      "labelled_rows_per_day": 0.46621219424324256,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0004554156960932415
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 116.81167357766931,
+      "labelled_rows_per_day": 0.934493499848844,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0009131199132723788
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 211.0102054053121,
+      "labelled_rows_per_day": 1.688081844070667,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.001650250014804067
+     }
+    }
+   ],
+   "n_recurring_situations": 9,
+   "n_recurring_families": 3,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-26",
+   "n_root_flows": 4827455,
+   "attack_flows_root": 2686766,
+   "attack_share_root": 0.5565595122067425,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|0",
+     "family": "ddos",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.6156825715376777,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 548.2625661879697
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|1",
+     "family": "ddos",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.6156825715376777,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 548.2625661879697
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|2",
+     "family": "ddos",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.6156825715376777,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 548.2625661879697
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|3",
+     "family": "password",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.38431742846232236,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 342.232944865193
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|4",
+     "family": "password",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.38431742846232236,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 342.232944865193
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-26|recurring|5",
+     "family": "password",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.38431742846232236,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 342.232944865193
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "ddos",
+     "root_share": 0.6156825715376777,
+     "s=0.0025": {
+      "eval_rows_per_day": 162.97363668353768,
+      "labelled_rows_per_day": 1.303789659774034,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.00156444508846162
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 326.4988458916764,
+      "labelled_rows_per_day": 2.6119919007331203,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.003136751710031088
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 589.2934595905158,
+      "labelled_rows_per_day": 4.714349720050475,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.005668942797846294
+     }
+    },
+    {
+     "family": "password",
+     "root_share": 0.38431742846232236,
+     "s=0.0025": {
+      "eval_rows_per_day": 218.25847708313745,
+      "labelled_rows_per_day": 1.7460684506686264,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.004015077055549512
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 437.1342919162681,
+      "labelled_rows_per_day": 3.4970756037392983,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.008050330377709825
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 788.6262104759073,
+      "labelled_rows_per_day": 6.309011968091248,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.014549083457596665
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-27",
+   "n_root_flows": 3750949,
+   "attack_flows_root": 3396641,
+   "attack_share_root": 0.9055417708958453,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|0",
+     "family": "password",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.16551822815540412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 239.81388667104534
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|1",
+     "family": "password",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.16551822815540412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 239.81388667104534
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|2",
+     "family": "password",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.16551822815540412,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 239.81388667104534
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|3",
+     "family": "xss",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.8344817718445959,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 1209.053040818569
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|4",
+     "family": "xss",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.8344817718445959,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 1209.053040818569
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-27|recurring|5",
+     "family": "xss",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.8344817718445959,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 1209.053040818569
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "password",
+     "root_share": 0.16551822815540412,
+     "s=0.0025": {
+      "eval_rows_per_day": 444.5673372703305,
+      "labelled_rows_per_day": 3.556539721151559,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.012635665784062224
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 889.381796350962,
+      "labelled_rows_per_day": 7.115056412792366,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.02533482737608456
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 1601.5994587788484,
+      "labelled_rows_per_day": 12.812799334285078,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.04578675664033042
+     }
+    },
+    {
+     "family": "xss",
+     "root_share": 0.8344817718445959,
+     "s=0.0025": {
+      "eval_rows_per_day": 307.00538040729236,
+      "labelled_rows_per_day": 2.456045502828038,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0004971140964548358
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 614.6053248289455,
+      "labelled_rows_per_day": 4.916847514949694,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0009967262536958767
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 1108.0062468331503,
+      "labelled_rows_per_day": 8.864058815836927,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0018013488601103078
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-28",
+   "n_root_flows": 329487,
+   "attack_flows_root": 113507,
+   "attack_share_root": 0.34449614097066045,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|0",
+     "family": "ransomware",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.034984626498806244,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 19.283128035710956
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|1",
+     "family": "ransomware",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.034984626498806244,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 19.283128035710956
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|2",
+     "family": "ransomware",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.034984626498806244,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 19.283128035710956
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|3",
+     "family": "Backdoor",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.9650153735011937,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 531.905492953824
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|4",
+     "family": "Backdoor",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.9650153735011937,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 531.905492953824
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-28|recurring|5",
+     "family": "Backdoor",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.9650153735011937,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 531.905492953824
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "ransomware",
+     "root_share": 0.034984626498806244,
+     "s=0.0025": {
+      "eval_rows_per_day": 168.53088914471698,
+      "labelled_rows_per_day": 1.3482218642029904,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0691327916870999
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 337.62273823352814,
+      "labelled_rows_per_day": 2.7009313667171013,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.13861298433745156
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 609.3435028137936,
+      "labelled_rows_per_day": 4.874656933283333,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.2505104489892792
+     }
+    },
+    {
+     "family": "Backdoor",
+     "root_share": 0.9650153735011937,
+     "s=0.0025": {
+      "eval_rows_per_day": 9.049348200217295,
+      "labelled_rows_per_day": 0.07239277756314405,
+      "evaluable_per_family_rule": false,
+      "down_weight": 9.08594521653242e-05
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 18.143345459477995,
+      "labelled_rows_per_day": 0.14514273787413193,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.00018217548449228323
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 32.787439175158774,
+      "labelled_rows_per_day": 0.2622922387747132,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.0003292394477554785
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  },
+  {
+   "dataset": "NF-ToN-IoT-v3",
+   "root_day": "2019-04-29",
+   "n_root_flows": 2058133,
+   "attack_flows_root": 99861,
+   "attack_share_root": 0.04852018795675498,
+   "rare_families": {},
+   "scenarios": {
+    "feature": 10,
+    "prior": 10,
+    "recurring": 6
+   },
+   "recurring": [
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|0",
+     "family": "Backdoor",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.939786302961116,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 72.95677221060072
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|1",
+     "family": "Backdoor",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.939786302961116,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 72.95677221060072
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|2",
+     "family": "Backdoor",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.939786302961116,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 72.95677221060072
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|3",
+     "family": "mitm",
+     "absent_days": 3,
+     "share_of_attack_flows": 0.06021369703888405,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 4.674463721148475
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|4",
+     "family": "mitm",
+     "absent_days": 4,
+     "share_of_attack_flows": 0.06021369703888405,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 4.674463721148475
+    },
+    {
+     "scenario": "NF-ToN-IoT-v3|2019-04-29|recurring|5",
+     "family": "mitm",
+     "absent_days": 5,
+     "share_of_attack_flows": 0.06021369703888405,
+     "rare_and_recurring": false,
+     "expected_labelled_rows_per_day": 4.674463721148475
+    }
+   ],
+   "rare_situations": [],
+   "injection_candidates": [
+    {
+     "family": "Backdoor",
+     "root_share": 0.939786302961116,
+     "s=0.0025": {
+      "eval_rows_per_day": 1.5344355432936692,
+      "labelled_rows_per_day": 0.012275076780502893,
+      "evaluable_per_family_rule": false,
+      "down_weight": 0.00016058067767663127
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 3.0765580954476457,
+      "labelled_rows_per_day": 0.02461164759642041,
+      "evaluable_per_family_rule": false,
+      "down_weight": 0.00032196829343203963
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 5.560087916460916,
+      "labelled_rows_per_day": 0.04447922653043852,
+      "evaluable_per_family_rule": false,
+      "down_weight": 0.0005818821529129998
+     }
+    },
+    {
+     "family": "mitm",
+     "root_share": 0.06021369703888405,
+     "s=0.0025": {
+      "eval_rows_per_day": 22.921203729652774,
+      "labelled_rows_per_day": 0.18336380287601034,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.03911658407618914
+     },
+     "s=0.005": {
+      "eval_rows_per_day": 45.9522965134735,
+      "labelled_rows_per_day": 0.3676066915950324,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.07842973390150486
+     },
+     "s=0.009": {
+      "eval_rows_per_day": 83.03259425031881,
+      "labelled_rows_per_day": 0.6642396520446476,
+      "evaluable_per_family_rule": true,
+      "down_weight": 0.1417433435091778
+     }
+    }
+   ],
+   "n_recurring_situations": 6,
+   "n_recurring_families": 2,
+   "n_rare_and_recurring_situations": 0,
+   "n_rare_situations": 0,
+   "n_rare_situations_unverified": 0
+  }
+ ]
+}

@@ -1,0 +1,165 @@
+{
+ "script_sha256": "e3a22ac65d252baf222879000beb19cc62b11e65da3724aa343d87b83ba4a532",
+ "seconds_per_scored_day": 65.44465033679995,
+ "seconds_per_scored_day_linear_fit": 63.16,
+ "rows_per_scored_day": 11200,
+ "seconds_per_1000_rows": 5.843272351499996,
+ "situations": {
+  "root_days": 10,
+  "natural_recurring": 21,
+  "injected_rare_recurring": 11,
+  "total_primary": 32,
+  "window_days": 2
+ },
+ "steps": [
+  {
+   "step": "base: outline (5 seeds everywhere)",
+   "tiers": {
+    "A_primary (ThreeBin, CURE, CBRS-family, ECBRS; 2 noise levels)": {
+     "tabfm_days": 2560,
+     "gpu_hours": 46.538418017279966
+    },
+    "A_descriptive natural rare situations (2018-02-21)": {
+     "tabfm_days": 320,
+     "gpu_hours": 5.817302252159996
+    },
+    "B (FIFO, DualFIFO, CBRS, herding, LoCalPFN-kNN [LoCalPFN cost x?, VERIFY])": {
+     "tabfm_days": 3200,
+     "gpu_hours": 58.173022521599954
+    },
+    "C (TabPFN-2.5 robustness: ThreeBin + best tier-A comparator, ToN only [TabFM timing as proxy, VERIFY]; binary-label ThreeBin; ARF on CPU = 0)": {
+     "tabfm_days": 868,
+     "gpu_hours": 15.779432358983989
+    },
+    "ablations (ThreeBin without R, without F, without H)": {
+     "tabfm_days": 1920,
+     "gpu_hours": 34.90381351295998
+    }
+   },
+   "total_gpu_hours": 161.21198866298388
+  },
+  {
+   "step": "cut 1 (outline): secondary comparisons 5 -> 3 seeds, primary unchanged",
+   "tiers": {
+    "A_primary (ThreeBin, CURE, CBRS-family, ECBRS; 2 noise levels)": {
+     "tabfm_days": 2560,
+     "gpu_hours": 46.538418017279966
+    },
+    "A_descriptive natural rare situations (2018-02-21)": {
+     "tabfm_days": 320,
+     "gpu_hours": 5.817302252159996
+    },
+    "B (FIFO, DualFIFO, CBRS, herding, LoCalPFN-kNN [LoCalPFN cost x?, VERIFY])": {
+     "tabfm_days": 1920,
+     "gpu_hours": 34.90381351295998
+    },
+    "C (TabPFN-2.5 robustness: ThreeBin + best tier-A comparator, ToN only [TabFM timing as proxy, VERIFY]; binary-label ThreeBin; ARF on CPU = 0)": {
+     "tabfm_days": 612,
+     "gpu_hours": 11.125590557255993
+    },
+    "ablations (ThreeBin without R, without F, without H)": {
+     "tabfm_days": 1152,
+     "gpu_hours": 20.942288107775983
+    }
+   },
+   "total_gpu_hours": 119.32741244743191
+  },
+  {
+   "step": "cut 2 (proposed, NCS): secondary TabFM at 0 % noise only",
+   "tiers": {
+    "A_primary (ThreeBin, CURE, CBRS-family, ECBRS; 2 noise levels)": {
+     "tabfm_days": 2560,
+     "gpu_hours": 46.538418017279966
+    },
+    "A_descriptive natural rare situations (2018-02-21)": {
+     "tabfm_days": 320,
+     "gpu_hours": 5.817302252159996
+    },
+    "B (FIFO, DualFIFO, CBRS, herding, LoCalPFN-kNN [LoCalPFN cost x?, VERIFY])": {
+     "tabfm_days": 960,
+     "gpu_hours": 17.45190675647999
+    },
+    "C (TabPFN-2.5 robustness: ThreeBin + best tier-A comparator, ToN only [TabFM timing as proxy, VERIFY]; binary-label ThreeBin; ARF on CPU = 0)": {
+     "tabfm_days": 420,
+     "gpu_hours": 7.6352092059599945
+    },
+    "ablations (ThreeBin without R, without F, without H)": {
+     "tabfm_days": 576,
+     "gpu_hours": 10.471144053887992
+    }
+   },
+   "total_gpu_hours": 87.91398028576793
+  },
+  {
+   "step": "cut 3 (proposed, NCS): secondary on LightGBM only (no TabFM)",
+   "tiers": {
+    "A_primary (ThreeBin, CURE, CBRS-family, ECBRS; 2 noise levels)": {
+     "tabfm_days": 2560,
+     "gpu_hours": 46.538418017279966
+    },
+    "A_descriptive natural rare situations (2018-02-21)": {
+     "tabfm_days": 320,
+     "gpu_hours": 5.817302252159996
+    },
+    "B (FIFO, DualFIFO, CBRS, herding, LoCalPFN-kNN [LoCalPFN cost x?, VERIFY])": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    },
+    "C (TabPFN-2.5 robustness: ThreeBin + best tier-A comparator, ToN only [TabFM timing as proxy, VERIFY]; binary-label ThreeBin; ARF on CPU = 0)": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    },
+    "ablations (ThreeBin without R, without F, without H)": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    }
+   },
+   "total_gpu_hours": 52.35572026943996
+  },
+  {
+   "step": "cut 4 (NCS decision, changes the outline's 'primary unchanged'): primary 5 -> 3 seeds",
+   "tiers": {
+    "A_primary (ThreeBin, CURE, CBRS-family, ECBRS; 2 noise levels)": {
+     "tabfm_days": 1536,
+     "gpu_hours": 27.92305081036798
+    },
+    "A_descriptive natural rare situations (2018-02-21)": {
+     "tabfm_days": 192,
+     "gpu_hours": 3.4903813512959974
+    },
+    "B (FIFO, DualFIFO, CBRS, herding, LoCalPFN-kNN [LoCalPFN cost x?, VERIFY])": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    },
+    "C (TabPFN-2.5 robustness: ThreeBin + best tier-A comparator, ToN only [TabFM timing as proxy, VERIFY]; binary-label ThreeBin; ARF on CPU = 0)": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    },
+    "ablations (ThreeBin without R, without F, without H)": {
+     "tabfm_days": 0,
+     "gpu_hours": 0.0
+    }
+   },
+   "total_gpu_hours": 31.413432161663977
+  }
+ ],
+ "budgets": {
+  "Bai 1 cap (12 CU = 6.73 Colab h)": {
+   "budget_gpu_hours": 6.734006734006733,
+   "first_step_within_budget": "none: NCS decision needed"
+  },
+  "25 GPU-h": {
+   "budget_gpu_hours": 25.0,
+   "first_step_within_budget": "none: NCS decision needed"
+  },
+  "50 GPU-h": {
+   "budget_gpu_hours": 50.0,
+   "first_step_within_budget": "cut 4 (NCS decision, changes the outline's 'primary unchanged'): primary 5 -> 3 seeds"
+  },
+  "100 GPU-h": {
+   "budget_gpu_hours": 100.0,
+   "first_step_within_budget": "cut 2 (proposed, NCS): secondary TabFM at 0 % noise only"
+  }
+ },
+ "colab_units_per_gpu_hour_bai1": 1.62
+}
